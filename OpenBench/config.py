@@ -5,7 +5,7 @@ FRAMEWORK_DEFAULTS = {
     'config' : {
 
         # Framework source, must be changed for your instance
-        'framework'   : 'http://github.com/AndyGrant/OpenBench/',
+        'framework'   : 'http://github.com/ratosh/OpenBench/',
 
         # Links for side bar
         'source'      : 'http://github.com/AndyGrant/EtherealDev/',
@@ -44,7 +44,7 @@ FRAMEWORK_DEFAULTS = {
                 'name'    : 'Ethereal',
                 'source'  : 'https://github.com/AndyGrant/Ethereal',
                 'nps'     : 1550000,
-                'default' : True,
+                'default' : False,
             },
 
             'Laser' : {
@@ -52,6 +52,13 @@ FRAMEWORK_DEFAULTS = {
                 'source'  : 'https://github.com/jeffreyan11/uci-chess-engine',
                 'nps'     : 625000,
                 'default' : False,
+            },
+
+            'Pirarucu' : {
+                'name'    : 'Pirarucu',
+                'source'  : 'https://github.com/ratosh/pirarucu',
+                'nps'     : 500000,
+                'default' : True,
             },
         },
 
