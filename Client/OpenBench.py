@@ -152,7 +152,8 @@ def getEngine(data):
         os.rename('tmp/{0}/src/{1}'.format(name, name), exe)
 		
     if os.path.isfile('tmp/{0}/build/distributions/{1}.zip'.format(name, name)):
-        with zipfile.ZipFile(name + '.zip') as data:
+        print('Found zip')
+        with zipfile.ZipFile('tmp/{0}/build/distributions/{1}.zip'.format(name, name)) as data:
             data.extractall('tmp/{0}/build/distributions/{1}'.format(name, name))
         shutil.move('tmp/{0}/build/distributions/{1}/{2}'.format(name, name, name), 'Engines/{0}'.format(name))
 
