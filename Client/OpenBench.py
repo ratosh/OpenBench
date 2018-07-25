@@ -47,8 +47,36 @@ def getNameAsExe(program):
     if IS_WINDOWS: return program + '.exe'
     return program
 
-def getFile(source, outname):
+def getExecutable(program):
+    executable = 'Engines/' + getNameAsExe(program)
+    if os.path.isfile(executable):
+        return executable
+    return getBashLocation(program) + getBashFile(program)
 
+def getExecutableLocation(program):
+    executable = getNameAsExe(program)
+    directory = 'Engines/'
+    if os.path.isfile(directory + executable):
+        return directory
+    return getBashLocation(program)
+	
+def getExecutableFile(program):
+    executable = getNameAsExe(program)
+    if os.path.isfile('Engines/' + executable):
+        return executable
+    return getBashFile(program)
+
+def getNameAsZip(program):
+    return program + '.zip'
+
+def getBashLocation(program):
+    return 'Engines/' + program + '/bin/'
+
+def getBashFile(program):
+    if IS_WINDOWS: return program + '.bat'
+    return program
+
+def getFile(source, outname):
     # Read a file from the given source and save it locally
     print('Downloading : {0}'.format(source))
     request = requests.get(url=source, stream=True, timeout=HTTP_TIMEOUT)
@@ -80,41 +108,55 @@ def getEngine(data):
 
     name      = data['sha']
     source    = data['source']
-    exe       = getNameAsExe(name)
+    exeFile   = getExecutableFile(name)
+    exe       = getExecutable(name)
     unzipname = source.split('/')[-3] + '-' + source.split('/')[-1].replace('.zip', '')
 
     # Don't redownload an engine we already have
-    if os.path.isfile('Engines/' + exe):
+    if os.path.isfile(exe):
+        print('Found executable file')
         return
-
+		
     # Log the fact that we are setting up a new engine
     print('\nSETTING UP ENGINE')
     print('Engine      :', data['name'])
     print('Commit      :', data['sha'])
     print('Source      :', source)
+    print('unzipname   :', unzipname)
 
     # Extract and delete the zip file
     getFile(source, name + '.zip')
+    print('Extracting zip')
     with zipfile.ZipFile(name + '.zip') as data:
         data.extractall('tmp')
     os.remove(name + '.zip')
+    os.rename('tmp/{0}'.format(unzipname), 'tmp/{0}'.format(name))
 
+    print('Starting build')
     # Build Engine using provided gcc and PGO flags
     subprocess.Popen(
-        ['make', 'EXE={0}'.format(exe)],
-        cwd='tmp/{0}/src/'.format(unzipname)).wait()
+        ['gradlew', 'build'],
+        cwd='tmp/{0}/'.format(name),
+		shell=True).wait()
 
     # Create the Engines directory if it does not exist
     if not os.path.isdir('Engines'):
         os.mkdir('Engines')
 
+    print('Moving files')
     # Move the compiled engine
-    if os.path.isfile('tmp/{0}/src/{1}'.format(unzipname, exe)):
-        os.rename('tmp/{0}/src/{1}'.format(unzipname, exe), 'Engines/{0}'.format(exe))
+    if os.path.isfile('tmp/{0}/src/{1}'.format(name, exeFile)):
+        os.rename('tmp/{0}/src/{1}'.format(name, exeFile), exe)
 
-    elif os.path.isfile('tmp/{0}/src/{1}'.format(unzipname, name)):
-        os.rename('tmp/{0}/src/{1}'.format(unzipname, name), 'Engines/{0}'.format(exe))
+    elif os.path.isfile('tmp/{0}/src/{1}'.format(name, name)):
+        os.rename('tmp/{0}/src/{1}'.format(name, name), exe)
+		
+    if os.path.isfile('tmp/{0}/build/distributions/{1}.zip'.format(name, name)):
+        with zipfile.ZipFile(name + '.zip') as data:
+            data.extractall('tmp/{0}/build/distributions/{1}'.format(name, name))
+        shutil.move('tmp/{0}/build/distributions/{1}/{2}'.format(name, name, name), 'Engines/{0}'.format(name))
 
+    print('Cleaning up')
     # Cleanup the unzipped zip file
     shutil.rmtree('tmp')
 
@@ -161,6 +203,12 @@ def getCutechessCommand(data, scalefactor):
     print ('ORIGINAL  :', data['test']['timecontrol'])
     print ('SCALED    :', timecontrol)
     print ('')
+	
+    devExecutable = getExecutableFile(data['test']['dev']['sha'])
+    devLocation = getExecutableLocation(data['test']['dev']['sha'])
+	
+    baseExecutable = getExecutableFile(data['test']['base']['sha'])
+    baseLocation = getExecutableLocation(data['test']['base']['sha'])
 
     generalFlags = (
         '-repeat'
@@ -175,14 +223,16 @@ def getCutechessCommand(data, scalefactor):
 
     devflags = (
         '-engine'
-        ' cmd=Engines/' + getNameAsExe(data['test']['dev']['sha']) +
+        ' stderr=err1.txt ' +
+        ' cmd=./' + devLocation + devExecutable +
         ' proto=' + data['test']['dev']['protocol'] +
         ' tc=' + timecontrol + devoptions
     )
 
     baseflags = (
-        '-engine'
-        ' cmd=Engines/' + getNameAsExe(data['test']['base']['sha']) +
+        '-engine' +
+        ' stderr=err2.txt ' +
+        ' cmd=./' + baseLocation + baseExecutable +
         ' proto=' + data['test']['base']['protocol'] +
         ' tc=' + timecontrol + baseoptions
     )
@@ -201,11 +251,14 @@ def singleCoreBench(name, outqueue):
 
     try:
         # Format file path because of Windows ...
-        dir = os.path.join('Engines', getNameAsExe(name))
+        directory = getExecutableLocation(name)
+        executable = getExecutableFile(name)
 
         # Run bench from CMD, pipe stderr into stdout
         data, empty = subprocess.Popen(
-            '{0} bench'.format(dir).split(),
+            '{0} bench'.format(executable).split(),
+            cwd=directory,
+            shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         ).communicate()
