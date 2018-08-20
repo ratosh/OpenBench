@@ -7,10 +7,6 @@ FRAMEWORK_DEFAULTS = {
         # Framework source, must be changed for your instance
         'framework'   : 'http://github.com/ratosh/OpenBench/',
 
-        # Links for side bar
-        'source'      : 'http://github.com/AndyGrant/EtherealDev/',
-        'homepage'    : 'http://github.com/AndyGrant/Ethereal',
-
         # Default to uci since everyone uses it
         'protocol'    : 'uci',
 
@@ -43,8 +39,8 @@ FRAMEWORK_DEFAULTS = {
             'Ethereal' : {
                 'name'    : 'Ethereal',
                 'source'  : 'https://github.com/AndyGrant/Ethereal',
-                'nps'     : 1550000,
-                'default' : False,
+                'nps'     : 1500000,
+                'default' : True,
             },
 
             'Laser' : {

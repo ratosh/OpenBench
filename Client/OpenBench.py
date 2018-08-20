@@ -227,7 +227,8 @@ def getCutechessCommand(data, scalefactor):
         ' stderr=err1.txt ' +
         ' cmd=./' + devLocation + devExecutable +
         ' proto=' + data['test']['dev']['protocol'] +
-        ' tc=' + timecontrol + devoptions
+        ' tc=' + timecontrol + devoptions +
+        ' name=test'
     )
 
     baseflags = (
@@ -235,7 +236,8 @@ def getCutechessCommand(data, scalefactor):
         ' stderr=err2.txt ' +
         ' cmd=./' + baseLocation + baseExecutable +
         ' proto=' + data['test']['base']['protocol'] +
-        ' tc=' + timecontrol + baseoptions
+        ' tc=' + timecontrol + baseoptions +
+        ' name=base'
     )
 
     bookflags = (
