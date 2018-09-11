@@ -93,6 +93,7 @@ def newTest(request):
     test.timecontrol = request.POST['timecontrol']
     test.priority    = int(request.POST['priority'])
     test.throughput  = int(request.POST['throughput'])
+    test.mingames    = int(request.POST['mingames'])
     test.elolower    = float(request.POST['elolower'])
     test.eloupper    = float(request.POST['eloupper'])
     test.alpha       = float(request.POST['alpha'])
@@ -274,8 +275,8 @@ def update(request, user):
 
     # New stats for the test
     sprt     = SPRT(swins, slosses, sdraws, test.elolower, test.eloupper)
-    passed   = sprt > test.upperllr
-    failed   = sprt < test.lowerllr
+    passed   = sprt > test.upperllr and games >= test.mingames
+    failed   = sprt < test.lowerllr and games >= test.mingames
     finished = passed or failed
 
     # Updating times manually since .update() won't invoke

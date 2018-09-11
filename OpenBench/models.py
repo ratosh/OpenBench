@@ -72,6 +72,7 @@ class Test(Model):
     priority    = IntegerField(default=0)
     throughput  = IntegerField(default=0)
 
+    mingames    = IntegerField(default=0)
     elolower    = FloatField(default=0.0)
     eloupper    = FloatField(default=0.0)
     alpha       = FloatField(default=0.0)
