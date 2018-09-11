@@ -59,7 +59,7 @@ def getExecutableLocation(program):
     if os.path.isfile(directory + executable):
         return directory
     return getBashLocation(program)
-	
+
 def getExecutableFile(program):
     executable = getNameAsExe(program)
     if os.path.isfile('Engines/' + executable):
@@ -116,7 +116,7 @@ def getEngine(data):
     if os.path.isfile(exe):
         print('Found executable file')
         return
-		
+
     # Log the fact that we are setting up a new engine
     print('\nSETTING UP ENGINE')
     print('Engine      :', data['name'])
@@ -134,10 +134,13 @@ def getEngine(data):
 
     print('Starting build')
     # Build Engine using provided gcc and PGO flags
-    subprocess.Popen(
+    process = subprocess.Popen(
         ['gradlew', 'build'],
         cwd='tmp/{0}/'.format(name),
-		shell=True).wait()
+        shell=True,
+        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+    process.wait()
+    killProcess(process)
 
     # Create the Engines directory if it does not exist
     if not os.path.isdir('Engines'):
@@ -150,7 +153,7 @@ def getEngine(data):
 
     elif os.path.isfile('tmp/{0}/src/{1}'.format(name, name)):
         os.rename('tmp/{0}/src/{1}'.format(name, name), exe)
-		
+
     if os.path.isfile('tmp/{0}/build/distributions/{1}.zip'.format(name, name)):
         print('Found zip')
         with zipfile.ZipFile('tmp/{0}/build/distributions/{1}.zip'.format(name, name)) as data:
@@ -204,10 +207,10 @@ def getCutechessCommand(data, scalefactor):
     print ('ORIGINAL  :', data['test']['timecontrol'])
     print ('SCALED    :', timecontrol)
     print ('')
-	
+
     devExecutable = getExecutableFile(data['test']['dev']['sha'])
     devLocation = getExecutableLocation(data['test']['dev']['sha'])
-	
+
     baseExecutable = getExecutableFile(data['test']['base']['sha'])
     baseLocation = getExecutableLocation(data['test']['base']['sha'])
 
@@ -264,7 +267,9 @@ def singleCoreBench(name, outqueue):
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
+            creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
         ).communicate()
+        killProcess(empty)
 
         # Split line by line after decoding
         data = data.decode('ascii').strip().split('\n')
@@ -397,7 +402,8 @@ def completeWorkload(data):
     # Spawn cutechess process
     process = subprocess.Popen(
         command.split(),
-        stdout=subprocess.PIPE
+        stdout=subprocess.PIPE,
+        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
     )
 
     # Tracking results of each game
