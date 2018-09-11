@@ -39,21 +39,39 @@ def pagingContext(page, pageLength, items, url):
     }
 
 def getSourceLocation(branch, repo):
-
     try:
-        target = repo.replace('github.com', 'api.github.com/repos')
-        target = target + 'branches/' + branch
-        data   = requests.get(target).json()
-        source = repo + 'archive/' + data['commit']['commit']['tree']['sha'] + '.zip'
-        sha    = data['commit']['sha']
+        original_target = repo.replace('github.com', 'api.github.com/repos')
+        target = original_target + 'branches/' + branch
+        data = requests.get(target).json()
+        sha = data['commit']['sha']
+        source = repo + 'archive/' + sha + '.zip'
         return (sha, source)
 
     except:
-        raise Exception('Unable to find branch ({0})'.format(branch))
+        try:
+            return getSourceLocationFromTag(branch, repo)
+
+        except:
+            raise Exception('Unable to find ({0})'.format(branch))
+
+def getSourceLocationFromTag(tag, repo):
+    try:
+        original_target = repo.replace('github.com', 'api.github.com/repos')
+        target = original_target + 'tags'
+        data = requests.get(target).json()
+        for entry in data:
+            print(entry)
+            if entry['name'] == tag:
+                sha = entry['commit']['sha']
+                source = repo + 'archive/' + sha + '.zip'
+                return (sha, source)
+        raise Exception('Unable to find a tag with name ({0})'.format(tag))
+
+    except:
+        raise Exception('Error while looking for tag ({0})'.format(tag))
 
 def newTest(request):
-
-    test = Test() # New Test, saved only after parsing
+    test = Test()  # New Test, saved only after parsing
     test.author = request.user.username
     test.engine = request.POST['enginename']
 
