@@ -60,7 +60,6 @@ def getSourceLocationFromTag(tag, repo):
         target = original_target + 'tags'
         data = requests.get(target).json()
         for entry in data:
-            print(entry)
             if entry['name'] == tag:
                 sha = entry['commit']['sha']
                 source = repo + 'archive/' + sha + '.zip'
@@ -272,11 +271,12 @@ def update(request, user):
     swins = test.wins + wins
     slosses = test.losses + losses
     sdraws = test.draws + draws
+    sgames = test.games + games
 
     # New stats for the test
     sprt     = SPRT(swins, slosses, sdraws, test.elolower, test.eloupper)
-    passed   = sprt > test.upperllr and games >= test.mingames
-    failed   = sprt < test.lowerllr and games >= test.mingames
+    passed   = sprt > test.upperllr and sgames >= test.mingames
+    failed   = sprt < test.lowerllr and sgames >= test.mingames
     finished = passed or failed
 
     # Updating times manually since .update() won't invoke
