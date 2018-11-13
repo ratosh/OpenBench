@@ -430,6 +430,9 @@ def completeWorkload(data):
         # Parse engine crashes
         if 'disconnects' in line or 'connection stalls' in line:
             crashes += 1
+			
+        if 'makes an illegal move' in line:
+            crashes += 1
 
         # Parse losses on time
         if 'on time' in line:
