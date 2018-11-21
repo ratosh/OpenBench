@@ -153,12 +153,14 @@ def getEngine(data):
 
     elif os.path.isfile('tmp/{0}/src/{1}'.format(name, name)):
         os.rename('tmp/{0}/src/{1}'.format(name, name), exe)
-
-    if os.path.isfile('tmp/{0}/build/distributions/{1}.zip'.format(name, name)):
-        print('Found zip')
-        with zipfile.ZipFile('tmp/{0}/build/distributions/{1}.zip'.format(name, name)) as data:
-            data.extractall('tmp/{0}/build/distributions/{1}'.format(name, name))
-        shutil.move('tmp/{0}/build/distributions/{1}/{2}'.format(name, name, name), 'Engines/{0}'.format(name))
+		
+    for file in os.listdir("tmp/{0}/build/distributions".format(name)):
+        if file.endswith(".zip") and "jvm" in file:
+            print("Found zip {0}".format(file))
+            fileName = os.path.splitext(file)[0]
+            with zipfile.ZipFile("tmp/{0}/build/distributions/{1}".format(name, file)) as data:
+                data.extractall('tmp/{0}/build/distributions/{1}'.format(name, name))
+            shutil.move('tmp/{0}/build/distributions/{1}/{2}'.format(name, name, fileName), 'Engines/{0}'.format(name))
 
     print('Cleaning up')
     # Cleanup the unzipped zip file
