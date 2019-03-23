@@ -1,4 +1,4 @@
-FRAMEWORK_REPO_URL = 'http://github.com/AndyGrant/OpenBench/'
+FRAMEWORK_REPO_URL = 'http://github.com/ratosh/OpenBench/'
 
 FRAMEWORK_DEFAULTS = {
 
@@ -14,21 +14,21 @@ FRAMEWORK_DEFAULTS = {
         'stc'         : {
             'threads'     : 1,
             'hash'        : 8,
-            'timecontrol' : '10.0+0.1',
+            'timecontrol' : '10.0+0.05',
         },
 
         # Defaults for Long Time Control tests (ease of submitting LTC)
         'ltc'         : {
             'threads'     : 1,
             'hash'        : 64,
-            'timecontrol' : '60.0+0.6',
+            'timecontrol' : '60.0+0.3',
         },
 
         # SPRT bounds and confidence values
         'elolower'    : -1.5,
         'eloupper'    : 4.5,
-        'alpha'       : 0.1,
-        'beta'        : 0.1,
+        'alpha'       : 0.2,
+        'beta'        : 0.2,
 
         # Configured engines for the framework. To scale NPS for your engine,
         # in order to match the time controls used here, do the following.
@@ -40,7 +40,7 @@ FRAMEWORK_DEFAULTS = {
                 'name'    : 'Ethereal',
                 'source'  : 'https://github.com/AndyGrant/Ethereal',
                 'nps'     : 1500000,
-                'default' : True,
+                'default' : False,
             },
 
             'Laser' : {
@@ -53,7 +53,7 @@ FRAMEWORK_DEFAULTS = {
             'Pirarucu' : {
                 'name'    : 'Pirarucu',
                 'source'  : 'https://github.com/ratosh/pirarucu',
-                'nps'     : 600000,
+                'nps'     : 400000,
                 'default' : True,
             },
         },
