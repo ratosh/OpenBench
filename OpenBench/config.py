@@ -27,8 +27,8 @@ FRAMEWORK_DEFAULTS = {
         # SPRT bounds and confidence values
         'elolower'    : -1.5,
         'eloupper'    : 4.5,
-        'alpha'       : 0.2,
-        'beta'        : 0.2,
+        'alpha'       : 0.1,
+        'beta'        : 0.1,
 
         # Configured engines for the framework. To scale NPS for your engine,
         # in order to match the time controls used here, do the following.
