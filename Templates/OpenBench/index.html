@@ -1,90 +1,40 @@
 {% extends "OpenBench/base.html" %}
-{% load mytags %}
+
 {% block content %}
-<table class="datatable">
-    {% if paging.page == 0 and greens == False %}
-        <tr><td class="embedded" colspan='7'><h2>Pending</h2></td></tr>
-        {% if pending %}
-        <tr>
-            <th>Date</th>
-            <th>Engine</th>
-            <th>User</th>
-            <th>Test</th>
-            <th>Diff</th>
-            <th>Time</th>
-            <th>Stats</th>
-        </tr>
-        {% endif %}
-        {% for test in pending %}
-        <tr>
-            <td>{{test.creation|date:"y-m-d"}}</td>
-            <td>{{test.engine}}</td>
-            <td><a href="/viewUser/{{test.author}}">{{test.author}}</a></td>
-            <td><a href="/viewTest/{{test.id}}">{{test.dev.name}}</a></td>
-            <td class="textcenter"><a href="{{test|gitDiffLink}}">diff</a></td>
-            <td>{{test.timecontrol}}</td>
-            <td class="statblock"><strong>{{test|shortStatBlock|linebreaksbr}}</strong></td>
-        </tr>
-        {% endfor %}
-        <tr><td class="embedded" colspan='7'><h2>Active - {{status}}</h2></td></tr>
-        {% if active %}
-        <tr>
-            <th>Date</th>
-            <th>Engine</th>
-            <th>User</th>
-            <th>Test</th>
-            <th>Diff</th>
-            <th>Time</th>
-            <th>Stats</th>
-        </tr>
-        {% endif %}
-        {% for test in active %}
-        <tr>
-            <td>{{test.creation|date:"y-m-d"}}</td>
-            <td>{{test.engine}}</td>
-            <td><a href="/viewUser/{{test.author}}">{{test.author}}</a></td>
-            <td><a href="/viewTest/{{test.id}}">{{test.dev.name}}</a></td>
-            <td class="textcenter"><a href="{{test|gitDiffLink}}">diff</a></td>
-            <td>{{test.timecontrol}}</td>
-            <td class="statblock"><strong>{{test|shortStatBlock|linebreaksbr}}</strong></td>
-        </tr>
-        {% endfor %}
-    {% endif %}
-    <tr><td class="embedded" colspan='7'><h2>Finished</h2></td></tr>
-    {% if completed %}
-    <tr>
-        <th>Date</th>
-        <th>Engine</th>
-        <th>User</th>
-        <th>Test</th>
-        <th>Diff</th>
-        <th>Time</th>
-        <th>Stats</th>
-    </tr>
-    {% endif %}
-    {% for test in completed %}
-    <tr>
-        <td>{{test.creation|date:"y-m-d"}}</td>
-        <td>{{test.engine}}</td>
-        <td><a href="/viewUser/{{test.author}}">{{test.author}}</a></td>
-        <td><a href="/viewTest/{{test.id}}">{{test.dev.name}}</a></td>
-        <td class="textcenter"><a href="{{test|gitDiffLink}}">diff</a></td>
-        <td>{{test.timecontrol}}</td>
-        <td class='statblock {{test|testResultColour}}'><strong>{{test|shortStatBlock|linebreaksbr}}</strong></td>
-    </tr>
-    {% endfor %}
-</table>
-<div id="pagebrowse">
-    {% if paging.prev != paging.next %}
-        <a class="page" href="/{{paging.url}}/{{paging.prev}}">&lt;--</a>
-        {% for page in paging.pages %}
-            {% if page != "..." %}
-                <a class="page" href="/{{paging.url}}/{{page}}">{{page}}</a>
-            {% else %}
-                <a class="page"> {{page}} </a>
+
+    <table class="datatable">
+
+        <!-- Only show Pending tests for the front page of the Index -->
+        {% if paging.page == 1 %}
+
+            <!-- Currently Pending tests (Waiting to be approved) -->
+            {% if pending %}
+                <tr><th colspan='6'>Pending</th></tr>
+                {% for test in pending %}
+                    {% include "OpenBench/Blocks/testsummary.html" %}
+                {% endfor %}
+                <tr class="table-spacer"><th></th></tr>
             {% endif %}
+
+            <!-- Currently Running tests (Waiting to be completed) -->
+            {% if active %}
+                <tr><th colspan='6'>Active {{status}}</th></tr>
+                {% for test in active %}
+                    {% include "OpenBench/Blocks/testsummary.html" %}
+                {% endfor %}
+                <tr class="table-spacer"><th></th></tr>
+            {% endif %}
+
+        {% endif %}
+
+        <!-- Tests which have already finished -->
+        <tr><th colspan='6'>Finished</th></tr>
+        {% for test in completed %}
+            {% include "OpenBench/Blocks/testsummary.html" %}
         {% endfor %}
-        <a class="page" href="/{{paging.url}}/{{paging.next}}">--&gt;</a>
-    {% endif %}
-</div>
+
+    </table>
+
+    {% include "OpenBench/Blocks/pagebrowser.html" %}
+
 {% endblock %}

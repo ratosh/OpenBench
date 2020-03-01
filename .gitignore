@@ -1,6 +1,7 @@
 *.pyc
 Client/*
 !Client/OpenBench.py
+!Client/Client.py
 !Client/cleanup.sh
 OpenBench/migrations/*
 

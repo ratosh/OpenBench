@@ -5,9 +5,9 @@ import shutil, subprocess, requests, zipfile, os, math, json
 
 
 ## Configuration
-HTTP_TIMEOUT   = 30  # Timeout in seconds for web requests
-GAMES_PER_TASK = 250 # Total games to complete for each workload
-REPORT_RATE    = 10  # Games per upload. Must divide GAMES_PER_TASK
+HTTP_TIMEOUT   = 30   # Timeout in seconds for web requests
+GAMES_PER_TASK = 1000 # Total games to complete for each workload
+REPORT_RATE    = 25   # Games per upload. Must divide GAMES_PER_TASK
 
 # Run from any location ...
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -205,6 +205,13 @@ def getCutechessCommand(data, scalefactor):
     basethreads = int(tokens[0].split('=')[1])
     baseoptions = ' option.'.join(['']+tokens)
 
+    # Check for an FRC/Chess960 opening book
+    variant = 'standard'
+    if "FRC" in data['test']['book']['name'].upper():
+        variant = 'fischerandom'
+    if "960" in data['test']['book']['name'].upper():
+        variant = 'fischerandom'
+
     # Finally, output the time control for the user
     print ('ORIGINAL  :', data['test']['timecontrol'])
     print ('SCALED    :', timecontrol)
@@ -221,6 +228,7 @@ def getCutechessCommand(data, scalefactor):
         ' -srand ' + str(int(time.time())) +
         ' -resign movecount=3 score=400'
         ' -draw movenumber=40 movecount=8 score=10'
+        ' -variant ' + variant +
         ' -concurrency ' + str(int(math.floor(THREADS / max(devthreads, basethreads)))) +
         ' -games ' + str(GAMES_PER_TASK) +
         ' -recover'
@@ -277,8 +285,8 @@ def singleCoreBench(name, outqueue):
         data = data.decode('ascii').strip().split('\n')
 
         # Parse and dump results into queue
-        bench = int(data[-2].split(':')[1])
-        nps   = int(data[-1].split(':')[1])
+        bench = int(data[-2].split()[-1])
+        nps   = int(data[-1].split()[-1])
         outqueue.put((bench, nps))
 
     # Bad compile or bad output, force an error
@@ -358,7 +366,6 @@ def reportResults(data, wins, losses, draws, crashes, timeloss):
         print ('<Warning> Unable to reach server')
         return "Unable"
 
-
 def completeWorkload(data):
 
     # Download and verify bench of dev engine
@@ -417,6 +424,7 @@ def completeWorkload(data):
         # Grab the next line of cutechess output
         line = process.stdout.readline().strip().decode('ascii')
         if line != '': print(line)
+        else: process.wait(); break
 
         # Update the current score line
         if line.startswith('Score of'):

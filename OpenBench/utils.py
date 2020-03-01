@@ -1,11 +1,96 @@
-import math, requests, random
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#                                                                             #
+#   OpenBench is a chess engine testing framework authored by Andrew Grant.   #
+#   <https://github.com/AndyGrant/OpenBench>           <andrew@grantnet.us>   #
+#                                                                             #
+#   OpenBench is free software: you can redistribute it and/or modify         #
+#   it under the terms of the GNU General Public License as published by      #
+#   the Free Software Foundation, either version 3 of the License, or         #
+#   (at your option) any later version.                                       #
+#                                                                             #
+#   OpenBench is distributed in the hope that it will be useful,              #
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+#   GNU General Public License for more details.                              #
+#                                                                             #
+#   You should have received a copy of the GNU General Public License         #
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.     #
+#                                                                             #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+import math, requests, random, datetime
+
+import OpenBench.models
 
 from django.utils import timezone
 from django.db.models import F
 from django.contrib.auth import authenticate
+from django.utils.timezone import utc
 
 from OpenBench.config import *
 from OpenBench.models import Engine, Profile, Machine, Result, Test
+
+
+def getPendingTests():
+    pending = OpenBench.models.Test.objects.filter(approved=False)
+    pending = pending.exclude(finished=True)
+    pending = pending.exclude(deleted=True)
+    return pending.order_by('-creation')
+
+def getActiveTests():
+    active = OpenBench.models.Test.objects.filter(approved=True)
+    active = active.exclude(finished=True)
+    active = active.exclude(deleted=True)
+    return active.order_by('-priority', '-currentllr')
+
+def getCompletedTests():
+    completed = OpenBench.models.Test.objects.filter(finished=True)
+    completed = completed.exclude(deleted=True)
+    return completed.order_by('-updated')
+
+def getMachineStatus(username=None):
+
+    # Filter for machines used in the last 10 minutes
+    target = datetime.datetime.utcnow().replace(tzinfo=utc) \
+           - datetime.timedelta(minutes=10)
+    machines = Machine.objects.filter(updated__gte=target)
+
+    # Filter for user specific views
+    if username != None: machines = machines.filter(owner=username)
+
+    # Extract stat information from workers
+    return "{0} Machines ".format(len(machines)) + \
+           "{0} Threads ".format(sum([f.threads for f in machines])) + \
+           "{0} MNPS ".format(round(sum([f.threads * f.mnps for f in machines]), 2))
+
+def getPagedContent(content, page, pagelen, url):
+
+    start = max(0, pagelen * (page - 1))
+    end   = min(len(content), pagelen * page)
+    count = 1 + math.ceil(len(content) / pagelen)
+
+    part1 = list(range(1, min(4, count)))
+    part2 = list(range(page - 2, page + 1))
+    part3 = list(range(page + 1, page + 3))
+    part4 = list(range(count - 3, count + 1))
+
+    pages = part1 + part2 + part3 + part4
+    pages = [f for f in pages if f >= 1 and f <= count]
+    pages = list(set(pages))
+    pages.sort()
+
+    final = []
+    for f in range(len(pages) - 1):
+        final.append(pages[f])
+        if pages[f] != pages[f+1] - 1:
+            final.append('...')
+
+    context = {
+        "url" : url, "page" : page, "pages" : final,
+        "prev" : max(1, page - 1), "next" : max(1, min(page + 1, count - 1)),
+    }
+
+    return content[start:end], context
 
 def pagingContext(page, pageLength, items, url):
 
@@ -14,8 +99,8 @@ def pagingContext(page, pageLength, items, url):
     end     = min(start + pageLength, items)
 
     # Get page numbers near the current page
-    pagenum = math.ceil(items / pageLength)
-    temp = list(range(0, min(3, pagenum)))
+    pagenum = 1 + math.ceil(items / pageLength)
+    temp = list(range(1, min(4, pagenum)))
     temp.extend(range(pagenum-1, pagenum-4, -1))
     temp.extend(range(max(0, page-2), min(pagenum-1, page+3)))
     temp = list(set(temp))
@@ -24,7 +109,7 @@ def pagingContext(page, pageLength, items, url):
     # Fill in gaps with an ellipsis, throw out negatives
     pages = []
     for f in range(len(temp)):
-        if temp[f] < 0: continue
+        if temp[f] < 1: continue
         pages.append(temp[f])
         if f < len(temp) - 1 and temp[f] != temp[f+1] - 1:
             pages.append("...")
@@ -34,8 +119,8 @@ def pagingContext(page, pageLength, items, url):
         "url"   : url,
         "page"  : page,
         "pages" : pages,
-        "prev"  : max(0, page - 1),
-        "next"  : max(0, min(page + 1, pagenum - 1)),
+        "prev"  : max(1, page - 1),
+        "next"  : max(1, min(page + 1, pagenum - 1)),
     }
 
 def getSourceLocation(branch, repo):
@@ -77,12 +162,12 @@ def newTest(request):
     # Extract Development Fields
     devname     = request.POST['devbranch']
     devbench    = int(request.POST['devbench'])
-    devprotocol = request.POST['devprotocol']
+    devprotocol = OPENBENCH_CONFIG['engines'][test.engine]['proto']
 
     # Extract Base Fields
     basename     = request.POST['basebranch']
     basebench    = int(request.POST['basebench'])
-    baseprotocol = request.POST['baseprotocol']
+    baseprotocol = OPENBENCH_CONFIG['engines'][test.engine]['proto']
 
     # Extract test configuration
     test.source      = request.POST['source']
@@ -110,7 +195,7 @@ def newTest(request):
     basesha, basesource = getSourceLocation(basename, test.source)
     test.base = getEngine(basename, basesource, baseprotocol, basesha, basebench)
 
-    # Track # of tests by this user
+    # Track number of tests by this user
     profile = Profile.objects.get(user=request.user)
     profile.tests += 1
     profile.save()
@@ -223,25 +308,21 @@ def workloadDictionary(machine, result, test):
         'result'  : { 'id'  : result.id, },
         'test' : {
             'id'            : test.id,
-            'nps'           : FRAMEWORK_DEFAULTS['config']['engines'][test.engine]['nps'],
-            'book'          : FRAMEWORK_DEFAULTS['config']['books'][test.bookname],
+            'nps'           : OPENBENCH_CONFIG['engines'][test.engine]['nps'],
+            'path'          : OPENBENCH_CONFIG['engines'][test.engine]['path'],
+            'book'          : OPENBENCH_CONFIG['books'][test.bookname],
             'timecontrol'   : test.timecontrol,
+            'engine'        : test.engine,
             'dev' : {
-                'id'        : test.dev.id,
-                'name'      : test.dev.name,
-                'source'    : test.dev.source,
-                'protocol'  : test.dev.protocol,
-                'sha'       : test.dev.sha,
-                'bench'     : test.dev.bench,
+                'id'        : test.dev.id,      'name'      : test.dev.name,
+                'source'    : test.dev.source,  'protocol'  : test.dev.protocol,
+                'sha'       : test.dev.sha,     'bench'     : test.dev.bench,
                 'options'   : test.devoptions,
             },
             'base' : {
-                'id'        : test.base.id,
-                'name'      : test.base.name,
-                'source'    : test.base.source,
-                'protocol'  : test.base.protocol,
-                'sha'       : test.base.sha,
-                'bench'     : test.base.bench,
+                'id'        : test.base.id,     'name'      : test.base.name,
+                'source'    : test.base.source, 'protocol'  : test.base.protocol,
+                'sha'       : test.base.sha,    'bench'     : test.base.bench,
                 'options'   : test.baseoptions,
             },
         },

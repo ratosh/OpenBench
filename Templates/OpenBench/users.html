@@ -1,32 +1,38 @@
 {% extends "OpenBench/base.html" %}
 
-{% block style %}
-{% load static %}
-{% endblock %}
+{% load mytags %}
 
 {% block content %}
-<table class="rawtable">
-    <tr>
-        <th>Username</th>
-        <th>Last Seen On</th>
-        <th>Games</th>
-        <th>Tests</th>
-        <th>Enabled</th>
-        <th>Approver</th>
-    </tr>
-    {% for profile in profiles %}
-    <tr>
-        <td><a href="/viewUser/{{profile.user.username}}">{{profile.user.username}}</a></td>
-        <td>{{profile.updated|date:'Y-m-d H:i'}}</td>
-        <td class="numeric">{{profile.games}}</td>
-        <td class="numeric">{{profile.tests}}</td>
-        {% if profile.enabled %}
-            <td class="numeric">X</td>
-        {% endif %}
-        {% if profile.approver %}
-            <td class="numeric">X</td>
-        {% endif %}
-    </tr>
-    {% endfor %}
-<table>
+
+    <table>
+
+        <tr>
+            <th>USERNAME</th>
+            <th>GAMES</th>
+            <th>TESTS</th>
+            <th>ENGINE</th>
+            <th>SOURCE REPOSITORY</th>
+        </tr>
+
+        {% for profile in profiles %}
+            {% if profile.enabled %}
+                <tr>
+                    <td><a href="/user/{{profile.user.username}}">{{profile.user.username}}</a></td>
+                    <td style="text-align: right">{{profile.games|insertCommas}}</td>
+                    <td style="text-align: right">{{profile.tests|insertCommas}}</td>
+                    <td>{{profile.engine}}</td>
+                    <td><a href="{{profile.repo}}">{{profile.repo}}</a></td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+
+        <tr style="font-weight: bold">
+            <th>OVERALL</th>
+            <th>{{profiles|sumAttributes:"games"|insertCommas}}</th>
+            <th>{{profiles|sumAttributes:"tests"|insertCommas}}</th>
+            <th></th><th></th>
+        </tr>
+
+    </table>
+
 {% endblock %}

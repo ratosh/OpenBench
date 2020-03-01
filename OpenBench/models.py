@@ -1,3 +1,23 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#                                                                             #
+#   OpenBench is a chess engine testing framework authored by Andrew Grant.   #
+#   <https://github.com/AndyGrant/OpenBench>           <andrew@grantnet.us>   #
+#                                                                             #
+#   OpenBench is free software: you can redistribute it and/or modify         #
+#   it under the terms of the GNU General Public License as published by      #
+#   the Free Software Foundation, either version 3 of the License, or         #
+#   (at your option) any later version.                                       #
+#                                                                             #
+#   OpenBench is distributed in the hope that it will be useful,              #
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of            #
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             #
+#   GNU General Public License for more details.                              #
+#                                                                             #
+#   You should have received a copy of the GNU General Public License         #
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.     #
+#                                                                             #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 from django.db.models import CharField, IntegerField, BooleanField, FloatField
 from django.db.models import ForeignKey, DateTimeField, OneToOneField
 from django.db.models import CASCADE, PROTECT, Model
@@ -20,6 +40,7 @@ class Profile(Model):
     games    = IntegerField(default=0)
     tests    = IntegerField(default=0)
     repo     = CharField(max_length=256, blank=True)
+    engine   = CharField(max_length=128, blank=True)
     enabled  = BooleanField(default=False)
     approver = BooleanField(default=False)
     updated  = DateTimeField(auto_now=True)
