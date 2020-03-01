@@ -12,8 +12,8 @@ then
 fi
 
 
-python manage.py makemigrations
-python manage.py migrate
+python manage.py makemigrations OpenBench
+python manage.py migrate OpenBench
 python manage.py migrate --run-syncdb
 python manage.py set_superuser
 python manage.py runserver 0.0.0.0:8000
