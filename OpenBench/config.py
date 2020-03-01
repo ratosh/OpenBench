@@ -27,8 +27,8 @@ FRAMEWORK_DEFAULTS = {
         # SPRT bounds and confidence values
         'elolower'    : -1.5,
         'eloupper'    : 4.5,
-        'alpha'       : 0.1,
-        'beta'        : 0.1,
+        'alpha'       : 0.05,
+        'beta'        : 0.05,
 
         # Configured engines for the framework. To scale NPS for your engine,
         # in order to match the time controls used here, do the following.
@@ -53,7 +53,7 @@ FRAMEWORK_DEFAULTS = {
             'Pirarucu' : {
                 'name'    : 'Pirarucu',
                 'source'  : 'https://github.com/ratosh/pirarucu',
-                'nps'     : 400000,
+                'nps'     : 1000000,
                 'default' : True,
             },
         },

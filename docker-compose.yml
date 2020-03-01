@@ -1,8 +1,28 @@
-version: '3'
+version: '3.7'
 
 services:
+    db:
+        image: postgres
+        env_file:
+          - ./env.var
+        volumes:
+          - postgres_data:/var/lib/postgresql/data/
+        networks:
+          - backend-network
     app:
         build: .
+        working_dir: /app
+        env_file:
+          - ./env.var
         ports: 
             - 8080:8000
-        command: python manage.py runserver 0.0.0.0:8000        
+        networks:
+          - backend-network
+        depends_on:
+          - db
+
+volumes:
+  postgres_data:
+  
+networks:
+  backend-network:
