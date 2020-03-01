@@ -3,6 +3,7 @@ version: '3.7'
 services:
     db:
         image: postgres
+        restart: always 
         env_file:
           - ./env.var
         volumes:
@@ -11,6 +12,7 @@ services:
           - backend-network
     app:
         build: .
+        restart: always 
         working_dir: /app
         env_file:
           - ./env.var
