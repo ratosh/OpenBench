@@ -75,70 +75,69 @@ OPENBENCH_CONFIG = {
                 'smpstc'  : { 'threads' : 8, 'hash' : 128, 'timecontrol' : '5.0+0.05' },
                 'smpltc'  : { 'threads' : 8, 'hash' : 512, 'timecontrol' : '20.0+0.2' },
             },
-
-            'Demolito' : {
-                'proto'     : 'uci',
-                'nps'       : 1250000,
-                'path'      : '/src/',
-                'source'    : 'https://github.com/lucasart/Demolito',
-                'testmodes' : {
-                    'stc'     : { 'threads' : 1, 'hash' :   8, 'timecontrol' : '8.0+0.08' },
-                    'ltc'     : { 'threads' : 1, 'hash' :  32, 'timecontrol' : '32.0+0.32'},
-                    'smpstc'  : { 'threads' : 8, 'hash' :  32, 'timecontrol' : '4.0+0.04' },
-                    'smpltc'  : { 'threads' : 8, 'hash' : 128, 'timecontrol' : '16.0+0.16'},
-                },
+        },
+        'Demolito' : {
+            'proto'     : 'uci',
+            'nps'       : 1250000,
+            'path'      : '/src/',
+            'source'    : 'https://github.com/lucasart/Demolito',
+            'testmodes' : {
+                'stc'     : { 'threads' : 1, 'hash' :   8, 'timecontrol' : '8.0+0.08' },
+                'ltc'     : { 'threads' : 1, 'hash' :  32, 'timecontrol' : '32.0+0.32'},
+                'smpstc'  : { 'threads' : 8, 'hash' :  32, 'timecontrol' : '4.0+0.04' },
+                'smpltc'  : { 'threads' : 8, 'hash' : 128, 'timecontrol' : '16.0+0.16'},
             },
-            'RubiChess' : {
-                'proto'     : 'uci',
-                'nps'       : 1000000,
-                'path'      : '/src/',
-                'source'    : 'https://github.com/Matthies/RubiChess',
-                'testmodes' : {
-                    'stc'     : { 'threads' : 1, 'hash' :   8, 'timecontrol' : '10.0+0.1' },
-                    'ltc'     : { 'threads' : 1, 'hash' :  64, 'timecontrol' : '60.0+0.6' },
-                    'smpstc'  : { 'threads' : 8, 'hash' :  64, 'timecontrol' : '5.0+0.05' },
-                    'smpltc'  : { 'threads' : 8, 'hash' : 256, 'timecontrol' : '20.0+0.2' },
-                },
+        },
+        'RubiChess' : {
+            'proto'     : 'uci',
+            'nps'       : 1000000,
+            'path'      : '/src/',
+            'source'    : 'https://github.com/Matthies/RubiChess',
+            'testmodes' : {
+                'stc'     : { 'threads' : 1, 'hash' :   8, 'timecontrol' : '10.0+0.1' },
+                'ltc'     : { 'threads' : 1, 'hash' :  64, 'timecontrol' : '60.0+0.6' },
+                'smpstc'  : { 'threads' : 8, 'hash' :  64, 'timecontrol' : '5.0+0.05' },
+                'smpltc'  : { 'threads' : 8, 'hash' : 256, 'timecontrol' : '20.0+0.2' },
             },
-            'Pirarucu' : {
-                'name'    : 'Pirarucu',
-                'source'  : 'https://github.com/ratosh/pirarucu',
-                'nps'     : 1000000,
-                'testmodes' : {
-                    'stc'     : { 'threads' : 1, 'hash' :  32, 'timecontrol' : '10.0+0.1' },
-                    'ltc'     : { 'threads' : 1, 'hash' : 128, 'timecontrol' : '60.0+0.6' },
-                    'smpstc'  : { 'threads' : 8, 'hash' : 128, 'timecontrol' : '5.0+0.05' },
-                    'smpltc'  : { 'threads' : 8, 'hash' : 512, 'timecontrol' : '20.0+0.2' },
-                },
+        },
+        'Pirarucu' : {
+            'name'    : 'Pirarucu',
+            'source'  : 'https://github.com/ratosh/pirarucu',
+            'nps'     : 1000000,
+            'testmodes' : {
+                'stc'     : { 'threads' : 1, 'hash' :  32, 'timecontrol' : '10.0+0.1' },
+                'ltc'     : { 'threads' : 1, 'hash' : 128, 'timecontrol' : '60.0+0.6' },
+                'smpstc'  : { 'threads' : 8, 'hash' : 128, 'timecontrol' : '5.0+0.05' },
+                'smpltc'  : { 'threads' : 8, 'hash' : 512, 'timecontrol' : '20.0+0.2' },
             },
         },
         # Book confgiruation. When addding a book, follow the provided template.
         # The SHA is defined by hashlib.sha256(book).hexdigest(). OpenBench.py
         # (Client File) has an example to show you how to find a hash digest
-
+    
         'books' : {
-
+    
             '2moves_v1.pgn' : {
                 'name'    : '2moves_v1.pgn',
                 'sha'     : '46aed7f2696618b2b914942032957b7a97a8f343bf54ba83e20a47818f0d42e0',
                 'source'  : 'http://github.com/AndyGrant/OpenBench/raw/master/Books/2moves_v1.pgn',
                 'default' : False,
             },
-
+    
             '2moves_v2.pgn' : {
                 'name'    : '2moves_v2.pgn',
                 'sha'     : 'c88dffb891e3cf126711792fb2e12a2fc97be3d995ba7bf44e49efe6f524b3bf',
                 'source'  : FRAMEWORK_REPO_URL + 'raw/master/Books/2moves_v2.pgn',
                 'default' : True,
             },
-
+    
             '8moves_v3.pgn' : {
                 'name'    : '8moves_v3.pgn',
                 'sha'     : '04fcce1488a94f3b7795cef6f74d89016eb278328897c1018e6162c5967273f5',
                 'source'  : 'http://github.com/AndyGrant/OpenBench/raw/master/Books/8moves_v3.pgn',
                 'default' : False,
             },
-
+    
             '3moves_FRC.pgn' : {
                 'name'    : '3moves_FRC.pgn',
                 'sha'     : '4c801140e3a52d3a306cb226ccd6225c47789409c5f2d0e1d7cf86152ea1f973',
