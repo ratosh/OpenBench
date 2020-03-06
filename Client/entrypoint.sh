@@ -1,0 +1,3 @@
+#!/bin/sh
+
+python OpenBench.py -U $CLIENT_USER -P $CLIENT_PASSWORD -S $OPENBENCH_ADDRESS -T $CLIENT_THREADS

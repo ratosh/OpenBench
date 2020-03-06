@@ -135,16 +135,16 @@ OPENBENCH_CONFIG = {
                 'smpltc'  : { 'threads' : 8, 'hash' : 256, 'timecontrol' : '20.0+0.2' },
             },
         },
-        'Pirarucu' : {
-            'proto'     : 'uci',
-            'nps'     : 1000000,
-            'path'      : '/src/',
-            'source'  : 'https://github.com/ratosh/pirarucu',
-            'testmodes' : {
-                'stc'     : { 'threads' : 1, 'hash' :  32, 'timecontrol' : '10.0+0.1' },
-                'ltc'     : { 'threads' : 1, 'hash' : 128, 'timecontrol' : '60.0+0.6' },
-                'smpstc'  : { 'threads' : 8, 'hash' : 128, 'timecontrol' : '5.0+0.05' },
-                'smpltc'  : { 'threads' : 8, 'hash' : 512, 'timecontrol' : '20.0+0.2' },
+        'Pirarucu': {
+            'proto': 'uci',
+            'nps': 1000000,
+            'path': '/src/',
+            'source': 'https://github.com/ratosh/pirarucu',
+            'testmodes': {
+                'stc': {'threads': 1, 'hash':  32, 'timecontrol': '10.0+0.1'},
+                'ltc': {'threads': 1, 'hash': 128, 'timecontrol': '60.0+0.6'},
+                'smpstc': {'threads': 8, 'hash': 128, 'timecontrol': '5.0+0.05'},
+                'smpltc': {'threads': 8, 'hash': 512, 'timecontrol': '20.0+0.2'},
             },
         },
     },

@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+    client:
+        build:
+          context: ./Client
+          dockerfile: Dockerfile
+        working_dir: /app
+        env_file:
+          - ./client_env.var
