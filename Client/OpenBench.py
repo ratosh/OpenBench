@@ -130,8 +130,7 @@ def getEngine(data):
     process = subprocess.Popen(
         [script],
         cwd=directory,
-        shell=IS_WINDOWS,
-        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+        shell=IS_WINDOWS)
     process.wait()
 
     shutil.move('tmp/{0}/build/output'.format(name), 'Engines/{0}'.format(name))
