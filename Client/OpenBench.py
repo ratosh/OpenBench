@@ -93,7 +93,8 @@ def getEngine(data):
     unzipname = source.split('/')[-3] + '-' + source.split('/')[-1].replace('.zip', '')
 
     engine_path = getEngineFinalLocation(name)
-    print(engine_path)
+    if os.path.isdir('tmp'): 
+        shutil.rmtree('tmp')
 
     # Don't redownload an engine we already have
     if os.path.isdir(engine_path):
@@ -122,13 +123,15 @@ def getEngine(data):
     directory = 'tmp/{0}/openbench'.format(name)
     script = getBuildScript()
 
-    if not IS_WINDOWS:
+    if IS_WINDOWS:
+        script = 'python3 {0}'.format(script)
+    else:
         os.system('chmod +x {0}{1}'.format(directory, script))
 
     print('Starting build')
     # Build Engine using provided gcc and PGO flags
-    process = subprocess.Popen(
-        [script],
+    process = subprocess.call(
+        script.split(),
         cwd=directory,
         shell=IS_WINDOWS)
     process.wait()
