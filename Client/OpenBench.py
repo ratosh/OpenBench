@@ -128,13 +128,12 @@ def getEngine(data):
     else:
         os.system('chmod +x {0}{1}'.format(directory, script))
 
-    print('Starting build')
+    print('Building')
     # Build Engine using provided gcc and PGO flags
     process = subprocess.call(
         script.split(),
         cwd=directory,
         shell=IS_WINDOWS)
-    process.wait()
 
     shutil.move('tmp/{0}/build/output'.format(name), 'Engines/{0}'.format(name))
 
@@ -398,7 +397,6 @@ def completeWorkload(data):
 
         # Grab the next line of cutechess output
         line = process.stdout.readline().strip().decode('ascii')
-        print(line)
         if line != '':
             print(line)
         else:
