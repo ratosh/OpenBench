@@ -49,7 +49,7 @@ OPENBENCH_CONFIG = {
 
         '2moves_v2.pgn' : {
             'name'    : '2moves_v1.pgn',
-            'sha'     : '46aed7f2696618b2b914942032957b7a97a8f343bf54ba83e20a47818f0d42e0',
+            'sha'     : 'c88dffb891e3cf126711792fb2e12a2fc97be3d995ba7bf44e49efe6f524b3bf',
             'source'  : 'http://github.com/AndyGrant/OpenBench/raw/master/Books/2moves_v2.pgn',
             'default' : False,
         },
