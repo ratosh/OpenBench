@@ -214,7 +214,6 @@ def getCutechessCommand(data, scalefactor):
 
     devflags = (
             '-engine'
-            ' stderr=err1.txt' +
             ' cmd="' + runScript.format(devLocation) + '"' +
             ' proto=' + data['test']['dev']['protocol'] +
             ' tc=' + timecontrol + devoptions +
@@ -223,7 +222,6 @@ def getCutechessCommand(data, scalefactor):
 
     baseflags = (
             '-engine' +
-            ' stderr=err2.txt' +
             ' cmd="' + runScript.format(baseLocation) + '"' +
             ' proto=' + data['test']['base']['protocol'] +
             ' tc=' + timecontrol + baseoptions +
