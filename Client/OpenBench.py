@@ -126,7 +126,7 @@ def getEngine(data):
     if IS_WINDOWS:
         script = 'python3 {0}'.format(script)
     else:
-        os.system('chmod +x {0}{1}'.format(directory, script))
+        os.system('chmod +x {0}/{1}'.format(directory, script))
 
     print('Building')
     # Build Engine using provided gcc and PGO flags
