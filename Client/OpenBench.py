@@ -123,10 +123,10 @@ def getEngine(data):
     directory = 'tmp/{0}/openbench'.format(name)
     script = getBuildScript()
 
-    if IS_WINDOWS:
-        script = 'python3 {0}'.format(script)
-    else:
+    if not IS_WINDOWS:
         os.system('chmod +x {0}/{1}'.format(directory, script))
+
+    script = 'python3 {0}'.format(script)
 
     print('Building')
     # Build Engine using provided gcc and PGO flags
